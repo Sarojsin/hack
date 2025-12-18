@@ -1,0 +1,89 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Help - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-hands-helping"></i>
+            <h1>Community Help</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active"><i class="fas fa-home"></i> All Posts</a>
+            <a href="my-posts.html"><i class="fas fa-user"></i> My Posts</a>
+            <a href="create-post.html" class="btn-create"><i class="fas fa-plus"></i> Create Post</a>
+            <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-globe"></i> Community Problems</h2>
+            <p>Help prioritize issues by ranking their urgency</p>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All Problems</button>
+                <button class="filter-btn" data-filter="urgent">High Priority (≥2.5)</button>
+                <button class="filter-btn" data-filter="medium">Medium Priority (1.5-2.4)</button>
+                <button class="filter-btn" data-filter="low">Low Priority (<1.5)</button>
+            </div>
+            <div class="sort-options">
+                <select id="sortSelect">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority">Highest Priority</option>
+                    <option value="votes">Most Votes</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="postsContainer" class="posts-grid">
+            <!-- Posts will be loaded here -->
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading community problems...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Ranking Modal -->
+    <div id="rankingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Rank This Problem</h3>
+            <p>How urgent is this issue?</p>
+            <div class="ranking-options">
+                <button class="rank-btn rank-1" data-rank="1">
+                    <span class="rank-number">1</span>
+                    <span class="rank-label">Low Priority</span>
+                    <span class="rank-desc">Minor issue</span>
+                </button>
+                <button class="rank-btn rank-2" data-rank="2">
+                    <span class="rank-number">2</span>
+                    <span class="rank-label">Medium Priority</span>
+                    <span class="rank-desc">Needs attention</span>
+                </button>
+                <button class="rank-btn rank-3" data-rank="3">
+                    <span class="rank-number">3</span>
+                    <span class="rank-label">High Priority</span>
+                    <span class="rank-desc">Urgent action needed</span>
+                </button>
+            </div>
+            <button id="submitRanking" class="btn-primary">Submit Ranking</button>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/ranking.js"></script>
+</body>
+</html>

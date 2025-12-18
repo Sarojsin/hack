@@ -1,0 +1,77 @@
+Backend Setup
+# 1. Create virtual environment
+python -m venv venv
+
+# 2. Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Set up PostgreSQL database
+# Create database and run the SQL script
+psql -U postgres -f database_setup.sql
+
+# 5. Configure environment variables
+# Edit .env file with your credentials
+
+# 6. Run the backend
+cd backend/app
+python main.py
+
+Frontend Setup
+# 1. Install a simple HTTP server (if needed)
+npm install -g live-server
+
+# 2. Run frontend from the frontend directory
+cd frontend
+live-server --port=5500
+
+
+Backend Files:
+backend/app/main.py - FastAPI application with all routes and middleware
+
+backend/app/database.py - PostgreSQL database configuration and session management
+
+backend/app/models/ - SQLAlchemy models (User, Post, Ranking)
+
+backend/app/schemas/ - Pydantic schemas for request/response validation
+
+backend/app/routes/ - API endpoints (auth, posts, rankings)
+
+backend/app/services/ - Business logic (authentication, Cloudinary, ranking)
+
+backend/app/dependencies/auth.py - JWT authentication dependency
+
+backend/app/utils/security.py - Password hashing and JWT token creation
+
+Frontend Files:
+frontend/index.html - Home page showing all posts
+
+frontend/login.html - User login page
+
+frontend/signup.html - User registration page
+
+frontend/my-posts.html - Page showing user's own posts
+
+frontend/create-post.html - Form to create new posts
+
+frontend/css/style.css - All CSS styling
+
+frontend/js/api.js - API communication layer
+
+frontend/js/auth.js - Authentication logic
+
+frontend/js/posts.js - Post display and management
+
+frontend/js/ranking.js - Ranking system functionality
+
+Configuration Files:
+.env.example - Environment variables template
+
+requirements.txt - Python dependencies
+
+database/setup.sql - PostgreSQL database schema

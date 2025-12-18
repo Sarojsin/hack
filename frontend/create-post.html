@@ -1,0 +1,71 @@
+<!-- frontend/create-post.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - Community Help</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-hands-helping"></i>
+            <h1>Community Help</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> All Posts</a>
+            <a href="my-posts.html"><i class="fas fa-user"></i> My Posts</a>
+            <a href="create-post.html" class="active btn-create"><i class="fas fa-plus"></i> Create Post</a>
+            <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-plus-circle"></i> Create New Post</h2>
+            <p>Describe a community problem that needs attention</p>
+        </div>
+
+        <div class="auth-card">
+            <form id="createPostForm" class="auth-form">
+                <div class="form-group">
+                    <label for="postText">
+                        <i class="fas fa-comment-alt"></i> Problem Description
+                    </label>
+                    <textarea id="postText" required maxlength="500"
+                        placeholder="Describe the issue in detail..."></textarea>
+                    <div id="charCount" class="char-count">0/500</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="media">
+                        <i class="fas fa-camera"></i> Media (Image or Video)
+                    </label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="media" accept="image/*,video/*">
+                        <div class="upload-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click or drag to upload media</p>
+                        </div>
+                    </div>
+                    <div id="mediaPreview" class="media-preview"></div>
+                </div>
+
+                <button type="submit" class="btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Publish Post
+                </button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="create-post.js"></script>
+</body>
+
+</html>

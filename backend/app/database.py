@@ -5,7 +5,11 @@ from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Get the directory of the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Root directory is two levels up from backend/app
+ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 

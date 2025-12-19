@@ -1,7 +1,7 @@
 # backend/app/routes/posts.py
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Annotated
 from database import get_db
 from schemas.post import PostCreate, PostResponse, PostUpdate
 from models.post import Post
@@ -13,11 +13,12 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 
 @router.post("/", response_model=PostResponse)
 def create_post(
-    text: str,
-    media_file: Optional[UploadFile] = File(None),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    text: Annotated[str, Form()],
+    media_file: Annotated[Optional[UploadFile], File()] = None,
+    current_user: Annotated[User, Depends(get_current_user)] = None,
+    db: Annotated[Session, Depends(get_db)] = None
 ):
+    print(f"DEBUG: create_post called with text='{text}'")
     media_url = None
     media_type = None
     

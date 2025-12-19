@@ -1,4 +1,13 @@
 # backend/app/main.py
+import os
+from dotenv import load_dotenv
+
+# Load env variables before anything else
+# Root directory is two levels up from backend/app
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base

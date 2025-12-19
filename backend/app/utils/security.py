@@ -6,10 +6,15 @@ from jose import jwt
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Get project root to load .env reliably
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Root directory is two levels up from backend/app/utils
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
+print(f"DEBUG: security.py loaded SECRET_KEY={'set' if SECRET_KEY else 'NOT SET'}, ALGORITHM={ALGORITHM}")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")

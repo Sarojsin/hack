@@ -58,3 +58,10 @@ You can use the following user for testing:
 ---
 > [!TIP]
 > **Technical Note**: The backend has been updated to use `Annotated` for robust form parsing and absolute path detection for `.env` loading. Always start the backend from the `backend/app` directory or use `python backend/app/main.py` from the root.
+ 
+
+ terminating command
+ netstat -ano | findstr :8000; netstat -ano | findstr :5500
+
+  taskkill /F /PID 19756 /PID 22648 /PID 20960 /PID 22936 /PID 18884
+  

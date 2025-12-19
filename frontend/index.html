@@ -1,6 +1,7 @@
 <!-- frontend/index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-brand">
@@ -33,7 +35,7 @@
                 <button class="filter-btn active" data-filter="all">All Problems</button>
                 <button class="filter-btn" data-filter="urgent">High Priority (≥2.5)</button>
                 <button class="filter-btn" data-filter="medium">Medium Priority (1.5-2.4)</button>
-                <button class="filter-btn" data-filter="low">Low Priority (<1.5)</button>
+                <button class="filter-btn" data-filter="low">Low Priority (<1.5)< /button>
             </div>
             <div class="sort-options">
                 <select id="sortSelect">
@@ -81,9 +83,29 @@
         </div>
     </div>
 
+    <!-- Edit Post Modal -->
+    <div id="editPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-edit"></i> Edit Your Post</h3>
+            <p>Update the description of your community problem.</p>
+            <form id="editPostForm">
+                <div class="form-group">
+                    <textarea id="editPostText" maxlength="500" required></textarea>
+                    <div id="editCharCount" class="char-count">0/500</div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <button type="button" class="btn-cancel close-modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/auth.js"></script>
     <script src="js/api.js"></script>
     <script src="js/posts.js"></script>
     <script src="js/ranking.js"></script>
 </body>
+
 </html>

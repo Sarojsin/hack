@@ -51,7 +51,13 @@ def get_all_posts(
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user)
 ):
-    posts = db.query(Post).order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
+    query = db.query(Post)
+    
+    # NEW FEATURE: Exclude current user's own posts from "All Posts"
+    if current_user:
+        query = query.filter(Post.user_id != current_user.id)
+        
+    posts = query.order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
     
     # Add owner usernames
     for post in posts:

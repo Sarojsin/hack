@@ -1,18 +1,30 @@
 // frontend/js/posts.js
 let currentPostId = null;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadPosts();
     setupEventListeners();
 });
 
 async function loadPosts() {
+    const container = document.getElementById('postsContainer');
+    const currentPage = window.location.pathname.split('/').pop();
+    const isMyPostsPage = currentPage === 'my-posts.html';
+
     try {
-        const posts = await API.getAllPosts();
+        let posts;
+        if (isMyPostsPage) {
+            posts = await API.getMyPosts();
+        } else {
+            posts = await API.getAllPosts();
+        }
+
+        // Store posts globally for sorting/filtering
+        window.allLoadedPosts = posts;
         displayPosts(posts);
     } catch (error) {
         console.error('Error loading posts:', error);
-        document.getElementById('postsContainer').innerHTML = `
+        container.innerHTML = `
             <div class="error">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>Failed to load posts. Please try again.</p>
@@ -23,7 +35,7 @@ async function loadPosts() {
 
 function displayPosts(posts) {
     const container = document.getElementById('postsContainer');
-    
+
     if (posts.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -37,14 +49,33 @@ function displayPosts(posts) {
         `;
         return;
     }
-    
+
     container.innerHTML = posts.map(post => createPostCard(post)).join('');
-    
+
     // Add event listeners to rank buttons
     document.querySelectorAll('.rank-post-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             currentPostId = parseInt(this.dataset.postId);
             showRankingModal();
+        });
+    });
+
+    // Add event listeners for edit buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const postId = this.dataset.postId;
+            const postText = this.dataset.text;
+            showEditModal(postId, postText);
+        });
+    });
+
+    // Add event listeners for delete buttons
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const postId = this.dataset.postId;
+            if (confirm('Are you sure you want to delete this post?')) {
+                handleDeletePost(postId);
+            }
         });
     });
 }
@@ -52,19 +83,53 @@ function displayPosts(posts) {
 function createPostCard(post) {
     const mediaHtml = post.media_url ? `
         <div class="post-media">
-            ${post.media_type === 'image' 
-                ? `<img src="${post.media_url}" alt="Post image" loading="lazy">`
-                : `<video controls>
+            ${post.media_type === 'image'
+            ? `<img src="${post.media_url}" alt="Post image" loading="lazy">`
+            : `<video controls>
                     <source src="${post.media_url}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>`
-            }
+        }
         </div>
     ` : '';
-    
+
     const priorityClass = getPriorityClass(post.average_rank);
     const priorityText = getPriorityText(post.average_rank);
-    
+
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const isOwnPost = currentUser && currentUser.id === post.user_id;
+
+    let actionsHtml = '';
+    if (isOwnPost) {
+        actionsHtml = `
+            <div class="post-actions">
+                <button class="btn-action edit-btn" data-post-id="${post.id}" data-text="${escapeHtml(post.text)}">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn-action delete-btn" data-post-id="${post.id}">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        `;
+    } else {
+        actionsHtml = `
+            <div class="ranking-actions">
+                <button class="rank-btn-small rank-1 rank-post-btn" data-post-id="${post.id}">
+                    <i class="fas fa-flag"></i>
+                    <span>Low (1)</span>
+                </button>
+                <button class="rank-btn-small rank-2 rank-post-btn" data-post-id="${post.id}">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Medium (2)</span>
+                </button>
+                <button class="rank-btn-small rank-3 rank-post-btn" data-post-id="${post.id}">
+                    <i class="fas fa-fire"></i>
+                    <span>High (3)</span>
+                </button>
+            </div>
+        `;
+    }
+
     return `
         <div class="post-card">
             ${mediaHtml}
@@ -95,20 +160,7 @@ function createPostCard(post) {
                     </div>
                 </div>
                 
-                <div class="ranking-actions">
-                    <button class="rank-btn-small rank-1 rank-post-btn" data-post-id="${post.id}">
-                        <i class="fas fa-flag"></i>
-                        <span>Low (1)</span>
-                    </button>
-                    <button class="rank-btn-small rank-2 rank-post-btn" data-post-id="${post.id}">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Medium (2)</span>
-                    </button>
-                    <button class="rank-btn-small rank-3 rank-post-btn" data-post-id="${post.id}">
-                        <i class="fas fa-fire"></i>
-                        <span>High (3)</span>
-                    </button>
-                </div>
+                ${actionsHtml}
             </div>
         </div>
     `;
@@ -117,44 +169,44 @@ function createPostCard(post) {
 function setupEventListeners() {
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             applyFilter(this.dataset.filter);
         });
     });
-    
+
     // Sort select
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect) {
         sortSelect.addEventListener('change', applySorting);
     }
-    
+
     // Modal close
     const modal = document.getElementById('rankingModal');
     const closeBtn = document.querySelector('.close-modal');
-    
+
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             modal.classList.remove('show');
         });
     }
-    
+
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('show');
         }
     });
-    
+
     // Submit ranking
     const submitBtn = document.getElementById('submitRanking');
     if (submitBtn) {
         submitBtn.addEventListener('click', submitRanking);
     }
-    
+
     // Rank buttons in modal
     document.querySelectorAll('.rank-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.rank-btn').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
             this.dataset.rank = this.dataset.rank;
@@ -173,15 +225,15 @@ async function submitRanking() {
         alert('Please select a priority level');
         return;
     }
-    
+
     const rankValue = parseInt(selectedRank.dataset.rank);
-    
+
     try {
         await API.addRanking({
             post_id: currentPostId,
             rank_value: rankValue
         });
-        
+
         // Close modal and refresh posts
         document.getElementById('rankingModal').classList.remove('show');
         showMessage('Thank you for ranking this problem!', 'success');
@@ -191,31 +243,111 @@ async function submitRanking() {
     }
 }
 
-function applyFilter(filter) {
-    const posts = document.querySelectorAll('.post-card');
-    posts.forEach(post => {
-        const priorityText = post.querySelector('.priority-badge').textContent.toLowerCase();
-        
-        switch(filter) {
-            case 'urgent':
-                post.style.display = priorityText.includes('high') ? 'block' : 'none';
-                break;
-            case 'medium':
-                post.style.display = priorityText.includes('medium') ? 'block' : 'none';
-                break;
-            case 'low':
-                post.style.display = priorityText.includes('low') ? 'block' : 'none';
-                break;
-            default:
-                post.style.display = 'block';
+function showEditModal(postId, text) {
+    const modal = document.getElementById('editPostModal');
+    const textarea = document.getElementById('editPostText');
+    const charCount = document.getElementById('editCharCount');
+
+    if (!modal || !textarea) return;
+
+    currentPostId = postId;
+    textarea.value = text;
+    charCount.textContent = `${text.length}/500`;
+
+    modal.classList.add('show');
+
+    // Setup form submission for this specific edit
+    const form = document.getElementById('editPostForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const newText = textarea.value.trim();
+        if (!newText) return;
+
+        try {
+            await API.updatePost(currentPostId, { text: newText });
+            modal.classList.remove('show');
+            showMessage('Post updated successfully!', 'success');
+            loadPosts();
+        } catch (error) {
+            showMessage(error.message, 'error');
         }
-    });
+    };
+
+    // Update character count on input
+    textarea.oninput = () => {
+        charCount.textContent = `${textarea.value.length}/500`;
+    };
+}
+
+async function handleDeletePost(postId) {
+    try {
+        await API.deletePost(postId);
+        showMessage('Post deleted successfully!', 'success');
+        loadPosts();
+    } catch (error) {
+        showMessage(error.message, 'error');
+    }
+}
+
+function applyFilter(filter) {
+    if (!window.allLoadedPosts) return;
+
+    let filteredPosts = [...window.allLoadedPosts];
+
+    if (filter !== 'all') {
+        filteredPosts = filteredPosts.filter(post => {
+            const avgRank = post.average_rank || 0;
+            if (filter === 'urgent') return avgRank >= 2.5;
+            if (filter === 'medium') return avgRank >= 1.5 && avgRank < 2.5;
+            if (filter === 'low') return avgRank < 1.5;
+            return true;
+        });
+    }
+
+    // Also apply current sorting
+    const sortValue = document.getElementById('sortSelect')?.value || 'newest';
+    sortPosts(filteredPosts, sortValue);
+
+    displayPosts(filteredPosts);
 }
 
 function applySorting() {
-    // This would require more complex implementation with actual data sorting
-    // For MVP, we can reload posts with different ordering from API
-    console.log('Sorting would be implemented with API parameters');
+    if (!window.allLoadedPosts) return;
+
+    const sortValue = this.value;
+    const currentFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+
+    // We filter first then sort
+    let filteredPosts = [...window.allLoadedPosts];
+    if (currentFilter !== 'all') {
+        filteredPosts = filteredPosts.filter(post => {
+            const avgRank = post.average_rank || 0;
+            if (currentFilter === 'urgent') return avgRank >= 2.5;
+            if (currentFilter === 'medium') return avgRank >= 1.5 && avgRank < 2.5;
+            if (currentFilter === 'low') return avgRank < 1.5;
+            return true;
+        });
+    }
+
+    sortPosts(filteredPosts, sortValue);
+    displayPosts(filteredPosts);
+}
+
+function sortPosts(posts, criteria) {
+    switch (criteria) {
+        case 'newest':
+            posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            break;
+        case 'oldest':
+            posts.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            break;
+        case 'priority':
+            posts.sort((a, b) => (b.average_rank || 0) - (a.average_rank || 0));
+            break;
+        case 'votes':
+            posts.sort((a, b) => (b.total_rankings || 0) - (a.total_rankings || 0));
+            break;
+    }
 }
 
 function getPriorityClass(averageRank) {
@@ -254,11 +386,11 @@ function showMessage(text, type) {
         messageDiv.className = 'message';
         document.body.appendChild(messageDiv);
     }
-    
+
     messageDiv.textContent = text;
     messageDiv.className = `message ${type}`;
     messageDiv.style.display = 'block';
-    
+
     setTimeout(() => {
         messageDiv.style.display = 'none';
     }, 3000);

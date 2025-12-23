@@ -25,6 +25,7 @@ CLOUDINARY_API_SECRET=your-api-secret
 ## 3. Backend Startup
 1. Activate the virtual environment:
    - **Windows**: `venv\Scripts\activate`
+   or use this venv\Scripts\Activate.ps1
    - **Mac/Linux**: `source venv/bin/activate`
 2. Install dependencies (if not already done):
    ```bash

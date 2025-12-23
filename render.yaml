@@ -1,0 +1,38 @@
+# File: render.yaml
+# Place this in the ROOT of your GitHub repository
+services:
+  # 1. Your FastAPI Backend Web Service
+  - type: web
+    name: community-help-api
+    env: python
+    # Root directory for the backend code
+    rootDirectory: backend
+    # Build and start commands
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # --- IMPORTANT: Environment Variables ---
+    envVars:
+      # The database URL will be injected by the 'database' service below
+      - key: DATABASE_URL
+        fromDatabase:
+          name: community-help-db
+          property: connectionString
+      # Your Cloudinary credentials (set these in the Render Dashboard)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # A secret key for JWT/sessions (set this in the Render Dashboard)
+      - key: SECRET_KEY
+        generateValue: true # Render can auto-generate a secure one
+      # Optional: Specify Python version
+      - key: PYTHON_VERSION
+        value: 3.11.11
+
+  # 2. Your PostgreSQL Database
+  - type: pg
+    name: community-help-db
+    plan: free # For paid plans, use 'starter' or 'professional'
+    # WARNING: Free databases have limitations (see notes below)

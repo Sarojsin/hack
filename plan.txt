@@ -1,0 +1,299 @@
+1️⃣ What You Are Building (Very Clear Definition)
+
+A simple community posting app where:
+
+User can:
+
+Sign up using:
+
+Username
+
+Phone number
+
+Password
+
+National Identity Number
+
+Log in
+
+See:
+
+All users’ posts
+
+Only my posts
+
+Create posts with:
+
+Photo or video
+
+Text status
+
+Perform CRUD on only their posts:
+
+Create
+
+Read
+
+Update
+
+Delete
+
+Tech stack:
+
+Backend → FastAPI
+
+Database → PostgreSQL (user data & post metadata)
+
+Media storage → Cloudinary (photos/videos)
+
+Frontend → HTML, CSS, JavaScript
+
+This is a perfect MVP and suitable for:
+
+College project
+
+Portfolio
+
+First real backend project
+
+2️⃣ High-Level System Architecture (Mental Picture)
+
+Think in 3 layers:
+
+1. Frontend (Browser)
+
+Forms (login, signup, post creation)
+
+Pages (all posts, my posts)
+
+Sends requests to backend
+
+Displays responses
+
+⬇️ talks to
+
+2. Backend (FastAPI)
+
+Handles authentication
+
+Validates user data
+
+Controls CRUD permissions
+
+Talks to database
+
+Talks to Cloudinary
+
+⬇️ talks to
+
+3. Storage
+
+PostgreSQL → users, post info, ownership
+
+Cloudinary → images & videos only
+
+3️⃣ Authentication & User Identity (Very Important)
+Signup Logic (Concept)
+
+User enters:
+
+Username
+
+Phone number
+
+Password
+
+National ID number
+
+Backend:
+
+Validates format (length, digits)
+
+Hashes password
+
+Saves user in PostgreSQL
+
+National ID:
+
+Stored securely
+
+Used only for verification (not public)
+
+Login Logic
+
+User logs in using:
+
+Phone number + password
+
+Backend:
+
+Verifies credentials
+
+Issues login token (JWT or session)
+
+Frontend:
+
+Stores token
+
+Sends token with every request
+
+👉 This token is how backend knows who is logged in
+
+4️⃣ Posts Concept (How Data Is Split)
+What Goes in PostgreSQL
+
+Store only metadata, not files:
+
+Post ID
+
+User ID (owner)
+
+Text status
+
+Cloudinary media URL
+
+Media type (image / video)
+
+Created date
+
+Updated date
+
+What Goes in Cloudinary
+
+Store only files:
+
+Images
+
+Videos
+
+Cloudinary returns:
+
+Secure URL
+
+Media type
+
+That URL is saved in PostgreSQL.
+
+5️⃣ CRUD Rules (Very Important Logic)
+Create Post
+
+Logged-in user uploads:
+
+Image OR video
+
+Text status
+
+Backend:
+
+Uploads media to Cloudinary
+
+Receives URL
+
+Saves post with user ID
+
+Read Posts
+
+All Posts Page
+
+Show posts from all users
+
+My Posts Page
+
+Show posts where user_id = logged_in_user
+
+Update Post
+
+Allowed only if:
+
+Logged-in user owns the post
+
+User can:
+
+Update status text
+
+Replace image/video (optional)
+
+Backend checks ownership before update
+
+Delete Post
+
+Allowed only if:
+
+Logged-in user owns the post
+
+Backend:
+
+Deletes record from PostgreSQL
+
+Deletes media from Cloudinary (optional but good)
+
+6️⃣ Frontend Page Flow (HTML/CSS/JS)
+Pages You Need
+
+Signup page
+
+Login page
+
+Home page (all posts)
+
+My posts page
+
+Create/edit post page
+
+JavaScript Responsibilities
+
+Handle form submissions
+
+Send requests to backend
+
+Store login token
+
+Show/hide UI based on login state
+
+Display posts dynamically
+
+No framework is fine — vanilla JS is enough.
+
+7️⃣ Security & Privacy Considerations (Conceptual)
+
+Password → always hashed
+
+National ID:
+
+Never shown publicly
+
+Never exposed in frontend responses
+
+Only owner can:
+
+Edit post
+
+Delete post
+
+Media URLs:
+
+Public read
+
+Controlled write access
+
+8️⃣ Development Order (Very Important)
+
+Build in this exact order:
+
+Database design (users & posts)
+
+Signup & login logic
+
+Authentication protection
+
+Create post (text only)
+
+Cloudinary media upload
+
+All posts page
+
+My posts page
+
+Update & delete post
+
+UI polishing

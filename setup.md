@@ -73,3 +73,8 @@ Simply open `frontend/login.html` in your web browser. Note that some features m
 2. Sign up for a new account.
 3. Log in with your phone number and password.
 4. Start reporting community problems and ranking them!
+
+
+my id and passwords for testing .
+use: 9848976276
+password :123
